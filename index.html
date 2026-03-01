@@ -1,19 +1,11 @@
-GOOD 👏🔥🔥
-Now we’re stable.
-So current situation:
-✅ App opens
-✅ Audio plays
-✅ 114 surahs working
-❌ Only 2 reciters showin
-
 <!DOCTYPE html>
 <html>
 <head>
-<title>Al-Mujahid Quran App</title>
+<title>Al-Mujahid Quran</title>
 <style>
 body { font-family: Arial; text-align:center; background:#0b3d2e; color:white; }
-select, button { padding:10px; margin:10px; width:80%; max-width:400px; font-size:16px; }
-audio { width:80%; max-width:400px; margin-top:10px; }
+select, button { padding:10px; margin:10px; width:90%; max-width:400px; font-size:16px; }
+audio { width:90%; max-width:400px; margin-top:10px; }
 #quranText { margin:20px; padding:15px; background:white; color:black; border-radius:10px; display:none; max-height:300px; overflow:auto; }
 </style>
 </head>
@@ -22,12 +14,11 @@ audio { width:80%; max-width:400px; margin-top:10px; }
 <h2>📖 Al-Mujahid Quran</h2>
 
 <select id="reciter">
-<option value="mishary_rashid_alafasy">Mishary Rashid Al-Afasy</option>
-<option value="maher_al_muaiqly">Maher Al-Muaiqly</option>
-<option value="abdulrahman_alsudais">Abdulrahman Al-Sudais</option>
-<option value="saood_alshuraim">Saud Al-Shuraim</option>
-<option value="yasser_aldossari">Yasser Al-Dossari</option>
-<option value="bandar_baleela">Bandar Baleela</option>
+<option value="afasy">Mishary Rashid Al-Afasy</option>
+<option value="maher">Maher Al-Muaiqly</option>
+<option value="sudais">Abdulrahman Al-Sudais</option>
+<option value="shuraim">Saud Al-Shuraim</option>
+<option value="dossari">Yasser Al-Dossari</option>
 </select>
 
 <select id="surah"></select>
@@ -40,44 +31,75 @@ audio { width:80%; max-width:400px; margin-top:10px; }
 <div id="quranText"></div>
 
 <script>
+
+const surahNames = [
+"1 - Al-Fatiha","2 - Al-Baqarah","3 - Aal-E-Imran","4 - An-Nisa",
+"5 - Al-Ma'idah","6 - Al-An'am","7 - Al-A'raf","8 - Al-Anfal",
+"9 - At-Tawbah","10 - Yunus","11 - Hud","12 - Yusuf",
+"13 - Ar-Ra'd","14 - Ibrahim","15 - Al-Hijr","16 - An-Nahl",
+"17 - Al-Isra","18 - Al-Kahf","19 - Maryam","20 - Ta-Ha",
+"21 - Al-Anbiya","22 - Al-Hajj","23 - Al-Mu'minun","24 - An-Nur",
+"25 - Al-Furqan","26 - Ash-Shu'ara","27 - An-Naml","28 - Al-Qasas",
+"29 - Al-Ankabut","30 - Ar-Rum","31 - Luqman","32 - As-Sajdah",
+"33 - Al-Ahzab","34 - Saba","35 - Fatir","36 - Ya-Sin",
+"37 - As-Saffat","38 - Sad","39 - Az-Zumar","40 - Ghafir",
+"41 - Fussilat","42 - Ash-Shura","43 - Az-Zukhruf","44 - Ad-Dukhan",
+"45 - Al-Jathiyah","46 - Al-Ahqaf","47 - Muhammad","48 - Al-Fath",
+"49 - Al-Hujurat","50 - Qaf","51 - Adh-Dhariyat","52 - At-Tur",
+"53 - An-Najm","54 - Al-Qamar","55 - Ar-Rahman","56 - Al-Waqi'ah",
+"57 - Al-Hadid","58 - Al-Mujadila","59 - Al-Hashr","60 - Al-Mumtahanah",
+"61 - As-Saff","62 - Al-Jumu'ah","63 - Al-Munafiqun","64 - At-Taghabun",
+"65 - At-Talaq","66 - At-Tahrim","67 - Al-Mulk","68 - Al-Qalam",
+"69 - Al-Haqqah","70 - Al-Ma'arij","71 - Nuh","72 - Al-Jinn",
+"73 - Al-Muzzammil","74 - Al-Muddaththir","75 - Al-Qiyamah","76 - Al-Insan",
+"77 - Al-Mursalat","78 - An-Naba","79 - An-Nazi'at","80 - Abasa",
+"81 - At-Takwir","82 - Al-Infitar","83 - Al-Mutaffifin","84 - Al-Inshiqaq",
+"85 - Al-Buruj","86 - At-Tariq","87 - Al-A'la","88 - Al-Ghashiyah",
+"89 - Al-Fajr","90 - Al-Balad","91 - Ash-Shams","92 - Al-Layl",
+"93 - Ad-Duha","94 - Ash-Sharh","95 - At-Tin","96 - Al-Alaq",
+"97 - Al-Qadr","98 - Al-Bayyinah","99 - Az-Zalzalah","100 - Al-Adiyat",
+"101 - Al-Qari'ah","102 - At-Takathur","103 - Al-Asr","104 - Al-Humazah",
+"105 - Al-Fil","106 - Quraysh","107 - Al-Ma'un","108 - Al-Kawthar",
+"109 - Al-Kafirun","110 - An-Nasr","111 - Al-Masad","112 - Al-Ikhlas",
+"113 - Al-Falaq","114 - An-Nas"
+];
+
 const surahSelect = document.getElementById("surah");
 
-for(let i=1; i<=114; i++){
-  let option = document.createElement("option");
-  option.value = i;
-  option.text = "Surah " + i;
-  surahSelect.appendChild(option);
-}
+surahNames.forEach((name,index)=>{
+ let option=document.createElement("option");
+ option.value=index+1;
+ option.text=name;
+ surahSelect.appendChild(option);
+});
 
 function playSurah(){
-  const reciter = document.getElementById("reciter").value;
-  const surah = surahSelect.value.padStart(3,'0');
+ const reciter=document.getElementById("reciter").value;
+ const surah=surahSelect.value.padStart(3,'0');
 
-  const reciterMap = {
-    mishary_rashid_alafasy: "https://download.quranicaudio.com/quran/mishaari_raashid_al_3afaasee/",
-    maher_al_muaiqly: "https://download.quranicaudio.com/quran/maher_al_muaiqly/",
-    abdulrahman_alsudais: "https://download.quranicaudio.com/quran/abdurrahmaan_as_sudais/",
-    saood_alshuraim: "https://download.quranicaudio.com/quran/saood_ash-shuraym/",
-    yasser_aldossari: "https://download.quranicaudio.com/quran/yasser_ad-dussary/",
-    bandar_baleela: "https://download.quranicaudio.com/quran/bandar_balila/"
-  };
+ const servers={
+  afasy:"https://download.quranicaudio.com/quran/mishaari_raashid_al_3afaasee/",
+  maher:"https://download.quranicaudio.com/quran/maher_al_muaiqly/",
+  sudais:"https://download.quranicaudio.com/quran/abdurrahmaan_as_sudais/",
+  shuraim:"https://download.quranicaudio.com/quran/saood_ash-shuraym/",
+  dossari:"https://download.quranicaudio.com/quran/yasser_ad-dussary/"
+ };
 
-  const url = reciterMap[reciter] + surah + ".mp3";
-  document.getElementById("audioPlayer").src = url;
+ document.getElementById("audioPlayer").src=servers[reciter]+surah+".mp3";
 }
 
 function showText(){
-  const surah = surahSelect.value;
-  fetch("https://api.alquran.cloud/v1/surah/"+surah)
-    .then(response => response.json())
-    .then(data => {
-      let verses = data.data.ayahs.map(a => a.text).join(" ");
-      const div = document.getElementById("quranText");
-      div.style.display = "block";
-      div.innerHTML = verses;
-    })
-    .catch(() => alert("Text failed to load"));
+ const surah=surahSelect.value;
+ fetch("https://api.alquran.cloud/v1/surah/"+surah)
+ .then(res=>res.json())
+ .then(data=>{
+  let verses=data.data.ayahs.map(a=>a.text).join(" ");
+  const div=document.getElementById("quranText");
+  div.style.display="block";
+  div.innerHTML=verses;
+ });
 }
+
 </script>
 
 </body>
