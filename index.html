@@ -1,186 +1,95 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Qur'an Recitation App</title>
+<title>Al-Mujahid Digital Quran</title>
 
 <style>
 body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    transition: 0.3s;
-}
-
-/* DARK MODE WITH GRADIENT */
-body.dark {
-    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+    font-family: Arial;
+    background: #0f2027;
     color: white;
-    min-height: 100vh;
-}
-
-/* LIGHT MODE */
-body.light {
-    background: #f4f4f4;
-    color: #222;
-}
-
-.header {
-    padding: 15px;
-    font-size: 20px;
-    font-weight: bold;
-    color: gold;
     text-align: center;
-}
-
-.container {
-    max-width: 500px;
-    margin: auto;
     padding: 20px;
 }
 
-.card {
-    background: rgba(255,255,255,0.1);
-    backdrop-filter: blur(10px);
-    padding: 20px;
-    border-radius: 20px;
-    margin-top: 20px;
-}
-
-select, button {
+select, audio {
     width: 100%;
-    padding: 12px;
+    padding: 10px;
     margin: 10px 0;
-    border-radius: 15px;
-    border: none;
-    font-size: 16px;
-}
-
-button {
-    background: gold;
-    font-weight: bold;
-}
-
-audio {
-    width: 100%;
-    margin-top: 15px;
-}
-
-.now-playing {
-    margin-top: 10px;
-    font-size: 14px;
-    opacity: 0.8;
+    border-radius: 10px;
 }
 </style>
 </head>
 
-<body class="dark">
+<body>
 
-<div class="header">
-Multi-Reciter Qur'an Streaming App
-</div>
-
-<div class="container">
-<div class="card">
-
-<div style="text-align:center; font-size:18px; margin-bottom:15px;">
-بِسْمِ ٱللَّٰهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ
-</div>
-
-<select id="reciterSelect">
-<option value="maher">Sheikh Mahir Al-Muayqali</option>
-<option value="sudais">Sheikh Abdul Rahman Al-Sudais</option>
-<option value="shuraim">Sheikh Saud Al-Shuraim</option>
-<option value="dossari">Sheikh Yasser Al-Dossari</option>
-</select>
+<h2>Al-Mujahid Digital Quran</h2>
 
 <select id="surahSelect"></select>
 
-<button onclick="toggleMode()">Toggle Dark / Light Mode</button>
+<select id="reciterSelect">
+    <option value="afs">Mishary Rashid Alafasy</option>
+    <option value="maher">Mahir Al-Muayqali</option>
+</select>
 
-<audio id="player" controls></audio>
-
-<div class="now-playing" id="nowPlaying">
-Now Playing: Al-Fatiha
-</div>
-
-</div>
-</div>
+<audio id="audioPlayer" controls></audio>
 
 <script>
-
-const surahs = [
-"Al-Fatiha","Al-Baqarah","Aal-E-Imran","An-Nisa","Al-Ma'idah","Al-An'am","Al-A'raf","Al-Anfal","At-Tawbah","Yunus",
-"Hud","Yusuf","Ar-Ra'd","Ibrahim","Al-Hijr","An-Nahl","Al-Isra","Al-Kahf","Maryam","Ta-Ha",
-"Al-Anbiya","Al-Hajj","Al-Mu'minun","An-Nur","Al-Furqan","Ash-Shu'ara","An-Naml","Al-Qasas","Al-Ankabut","Ar-Rum",
-"Luqman","As-Sajdah","Al-Ahzab","Saba","Fatir","Ya-Sin","As-Saffat","Sad","Az-Zumar","Ghafir",
-"Fussilat","Ash-Shura","Az-Zukhruf","Ad-Dukhan","Al-Jathiyah","Al-Ahqaf","Muhammad","Al-Fath","Al-Hujurat","Qaf",
-"Adh-Dhariyat","At-Tur","An-Najm","Al-Qamar","Ar-Rahman","Al-Waqi'ah","Al-Hadid","Al-Mujadila","Al-Hashr","Al-Mumtahanah",
-"As-Saff","Al-Jumu'ah","Al-Munafiqun","At-Taghabun","At-Talaq","At-Tahrim","Al-Mulk","Al-Qalam","Al-Haqqah","Al-Ma'arij",
-"Nuh","Al-Jinn","Al-Muzzammil","Al-Muddathir","Al-Qiyamah","Al-Insan","Al-Mursalat","An-Naba","An-Nazi'at","Abasa",
-"At-Takwir","Al-Infitar","Al-Mutaffifin","Al-Inshiqaq","Al-Buruj","At-Tariq","Al-A'la","Al-Ghashiyah","Al-Fajr","Al-Balad",
-"Ash-Shams","Al-Layl","Ad-Duha","Ash-Sharh","At-Tin","Al-Alaq","Al-Qadr","Al-Bayyinah","Az-Zalzalah","Al-Adiyat",
-"Al-Qari'ah","At-Takathur","Al-Asr","Al-Humazah","Al-Fil","Quraysh","Al-Ma'un","Al-Kawthar","Al-Kafirun","An-Nasr",
-"Al-Masad","Al-Ikhlas","Al-Falaq","An-Nas"
-];
-
 const surahSelect = document.getElementById("surahSelect");
 const reciterSelect = document.getElementById("reciterSelect");
-const audio = document.getElementById("player");
-const nowPlaying = document.getElementById("nowPlaying");
+const audioPlayer = document.getElementById("audioPlayer");
 
-surahs.forEach((name, index) => {
-    let number = (index + 1).toString().padStart(3,'0');
+const surahNames = [
+"Al-Fatiha","Al-Baqarah","Aal-Imran","An-Nisa","Al-Ma'idah","Al-An'am",
+"Al-A'raf","Al-Anfal","At-Tawbah","Yunus","Hud","Yusuf","Ar-Ra'd",
+"Ibrahim","Al-Hijr","An-Nahl","Al-Isra","Al-Kahf","Maryam","Ta-Ha",
+"Al-Anbiya","Al-Hajj","Al-Mu'minun","An-Nur","Al-Furqan","Ash-Shu'ara",
+"An-Naml","Al-Qasas","Al-Ankabut","Ar-Rum","Luqman","As-Sajdah",
+"Al-Ahzab","Saba","Fatir","Ya-Sin","As-Saffat","Sad","Az-Zumar",
+"Ghafir","Fussilat","Ash-Shura","Az-Zukhruf","Ad-Dukhan","Al-Jathiyah",
+"Al-Ahqaf","Muhammad","Al-Fath","Al-Hujurat","Qaf","Adh-Dhariyat",
+"At-Tur","An-Najm","Al-Qamar","Ar-Rahman","Al-Waqi'ah","Al-Hadid",
+"Al-Mujadila","Al-Hashr","Al-Mumtahanah","As-Saff","Al-Jumu'ah",
+"Al-Munafiqun","At-Taghabun","At-Talaq","At-Tahrim","Al-Mulk",
+"Al-Qalam","Al-Haqqah","Al-Ma'arij","Nuh","Al-Jinn","Al-Muzzammil",
+"Al-Muddathir","Al-Qiyamah","Al-Insan","Al-Mursalat","An-Naba",
+"An-Nazi'at","Abasa","At-Takwir","Al-Infitar","Al-Mutaffifin",
+"Al-Inshiqaq","Al-Buruj","At-Tariq","Al-A'la","Al-Ghashiyah","Al-Fajr",
+"Al-Balad","Ash-Shams","Al-Layl","Ad-Duhaa","Ash-Sharh","At-Tin",
+"Al-Alaq","Al-Qadr","Al-Bayyinah","Az-Zalzalah","Al-Adiyat",
+"Al-Qari'ah","At-Takathur","Al-Asr","Al-Humazah","Al-Fil","Quraysh",
+"Al-Ma'un","Al-Kawthar","Al-Kafirun","An-Nasr","Al-Masad",
+"Al-Ikhlas","Al-Falaq","An-Nas"
+];
+
+for (let i = 1; i <= 114; i++) {
+    let num = String(i).padStart(3,'0');
     let option = document.createElement("option");
-    option.value = number;
-    option.text = number + " - " + name;
+    option.value = num + ".mp3";
+    option.textContent = num + " - " + surahNames[i-1];
     surahSelect.appendChild(option);
-});
-
-function getReciterURL(reciter, surah) {
-    const servers = {
-        maher: "https://server8.mp3quran.net/maher/",
-        sudais: "https://server11.mp3quran.net/sds/",
-        shuraim: "https://server7.mp3quran.net/shur/",
-        dossari: "https://server11.mp3quran.net/yasser/"
-    };
-    return servers[reciter] + surah + ".mp3";
 }
 
-function loadSurah() {
-    const surah = surahSelect.value;
+function updateAudio() {
     const reciter = reciterSelect.value;
+    const surah = surahSelect.value;
 
-    const url = getReciterURL(reciter, surah);
-    audio.src = url;
-    audio.play();
+    let baseURL = "";
 
-    nowPlaying.innerText =
-        "Now Playing: " +
-        surahs[surahSelect.selectedIndex] +
-        " - " +
-        reciterSelect.options[reciterSelect.selectedIndex].text;
-}
-
-surahSelect.addEventListener("change", loadSurah);
-reciterSelect.addEventListener("change", loadSurah);
-
-audio.addEventListener("ended", function() {
-    let index = surahSelect.selectedIndex;
-    if (index < surahs.length - 1) {
-        surahSelect.selectedIndex = index + 1;
-        loadSurah();
+    if (reciter === "afs") {
+        baseURL = "https://server8.mp3quran.net/afs/";
     }
-});
 
-function toggleMode() {
-    document.body.classList.toggle("dark");
-    document.body.classList.toggle("light");
+    if (reciter === "maher") {
+        baseURL = "https://server8.mp3quran.net/maher/";
+    }
+
+    audioPlayer.src = baseURL + surah;
 }
 
-surahSelect.selectedIndex = 0;
-loadSurah();
-
+surahSelect.addEventListener("change", updateAudio);
+reciterSelect.addEventListener("change", updateAudio);
 </script>
 
 </body>
