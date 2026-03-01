@@ -4,19 +4,7 @@ So current situation:
 ✅ App opens
 ✅ Audio plays
 ✅ 114 surahs working
-❌ Only 2 reciters showing
-❌ Quran text not showing
-Perfect. Now we fix both properly.
-🧠 Why Only 2 Reciters Show
-Because the current code inside your GitHub only contains:
-Mishary Rashid Al-Afasy
-Maher Al-Muaiqly
-The other reciters were not inside the final saved HTML file.
-So we will now upgrade your real working file.
-🔥 STEP 1 — Add All Reciters Properly
-Replace your ENTIRE index.html with this clean working version.
-Copy EVERYTHING below 👇
-Copy code
+❌ Only 2 reciters showin
 
 <!DOCTYPE html>
 <html>
@@ -64,7 +52,17 @@ for(let i=1; i<=114; i++){
 function playSurah(){
   const reciter = document.getElementById("reciter").value;
   const surah = surahSelect.value.padStart(3,'0');
-  const url = "https://cdn.islamic.network/quran/audio/128/" + reciter + "/" + surah + ".mp3";
+
+  const reciterMap = {
+    mishary_rashid_alafasy: "https://download.quranicaudio.com/quran/mishaari_raashid_al_3afaasee/",
+    maher_al_muaiqly: "https://download.quranicaudio.com/quran/maher_al_muaiqly/",
+    abdulrahman_alsudais: "https://download.quranicaudio.com/quran/abdurrahmaan_as_sudais/",
+    saood_alshuraim: "https://download.quranicaudio.com/quran/saood_ash-shuraym/",
+    yasser_aldossari: "https://download.quranicaudio.com/quran/yasser_ad-dussary/",
+    bandar_baleela: "https://download.quranicaudio.com/quran/bandar_balila/"
+  };
+
+  const url = reciterMap[reciter] + surah + ".mp3";
   document.getElementById("audioPlayer").src = url;
 }
 
