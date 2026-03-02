@@ -2,172 +2,223 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>AI Mujahid Quran</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Al Mujahid Quran App</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Amiri&display=swap" rel="stylesheet">
 
 <style>
-body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background: linear-gradient(#0f3d46, #1d5b63);
-    color: white;
-    padding: 20px;
+body{
+  margin:0;
+  font-family:Arial;
+  background:linear-gradient(to bottom,#0f2027,#203a43,#2c5364);
+  color:white;
+  text-align:center;
+  padding:20px;
 }
 
-.container {
-    max-width: 500px;
-    margin: auto;
+h1{
+  color:#ffd700;
 }
 
-select {
-    width: 100%;
-    padding: 12px;
-    border-radius: 15px;
-    border: none;
-    margin-top: 10px;
-    font-size: 16px;
+.container{
+  max-width:450px;
+  margin:auto;
 }
 
-button {
-    width: 100%;
-    padding: 15px;
-    margin-top: 15px;
-    font-size: 18px;
-    font-weight: bold;
-    border-radius: 20px;
-    border: none;
-    cursor: pointer;
-    background: #FFD400;
+select,input,button{
+  width:100%;
+  padding:15px;
+  margin:10px 0;
+  border-radius:15px;
+  border:none;
+  font-size:16px;
 }
 
-.card {
-    background: white;
-    color: black;
-    padding: 20px;
-    margin-top: 20px;
-    border-radius: 25px;
-    font-size: 22px;
-    line-height: 2.2;
-    direction: rtl;
-    text-align: right;
+button{
+  background:#ffd700;
+  font-weight:bold;
+  cursor:pointer;
 }
 
-.nowPlaying {
-    margin-top: 15px;
-    text-align: center;
-    font-size: 18px;
+audio{
+  width:100%;
+  margin-top:10px;
+}
+
+#quranText{
+  margin-top:20px;
+  text-align:right;
+  direction:rtl;
+  font-family:'Amiri', serif;
+  font-size:26px;
+  line-height:2.2;
+  background:white;
+  color:black;
+  padding:20px;
+  border-radius:15px;
+}
+
+.ayah-number{
+  display:inline-block;
+  border:1px solid #666;
+  border-radius:50%;
+  padding:4px 10px;
+  font-size:16px;
+  margin:0 5px;
 }
 </style>
 </head>
 
 <body>
 
+<h1>Al Mujahid Quran App</h1>
+
 <div class="container">
 
+<input type="text" id="searchSurah" placeholder="Search Surah..." onkeyup="searchSurah()">
+
 <select id="reciter">
-<option value="maher_al_muaiqly">Sheikh Maher Al-Muaiqly</option>
-<option value="yasser_ad_dussary">Sheikh Yasser Ad-Dossari</option>
-<option value="abdurrahmaan_as_sudais">Sheikh Abdulrahman As-Sudais</option>
-<option value="saood_ash_shuraym">Sheikh Saud Al-Shuraim</option>
+  <option value="maher">Sheikh Maher Al-Muaiqly</option>
+  <option value="dossari">Sheikh Yasser Al-Dossary</option>
+  <option value="sudais">Sheikh Abdul Rahman Al-Sudais</option>
+  <option value="shuraym">Sheikh Saud Al-Shuraim</option>
 </select>
 
 <select id="surah"></select>
 
-<button onclick="playSurah()">Play</button>
+<button onclick="playAudio()">Play</button>
 <button onclick="downloadSurah()">Download Surah</button>
 
-<div class="nowPlaying" id="nowPlaying"></div>
-<div class="card" id="quranText"></div>
+<audio id="audioPlayer" controls></audio>
+
+<p id="nowPlaying"></p>
+
+<div id="quranText"></div>
 
 </div>
 
 <script>
 
-const surahs = [
-"Al-Fatihah","Al-Baqarah","Aal-Imran","An-Nisa","Al-Ma'idah","Al-An'am",
-"Al-A'raf","Al-Anfal","At-Tawbah","Yunus","Hud","Yusuf","Ar-Ra'd",
-"Ibrahim","Al-Hijr","An-Nahl","Al-Isra","Al-Kahf","Maryam","Ta-Ha",
-"Al-Anbiya","Al-Hajj","Al-Mu'minun","An-Nur","Al-Furqan","Ash-Shu'ara",
-"An-Naml","Al-Qasas","Al-Ankabut","Ar-Rum","Luqman","As-Sajdah",
-"Al-Ahzab","Saba","Fatir","Ya-Sin","As-Saffat","Sad","Az-Zumar",
-"Ghafir","Fussilat","Ash-Shura","Az-Zukhruf","Ad-Dukhan","Al-Jathiyah",
-"Al-Ahqaf","Muhammad","Al-Fath","Al-Hujurat","Qaf","Adh-Dhariyat",
-"At-Tur","An-Najm","Al-Qamar","Ar-Rahman","Al-Waqi'ah","Al-Hadid",
-"Al-Mujadila","Al-Hashr","Al-Mumtahanah","As-Saff","Al-Jumu'ah",
-"Al-Munafiqun","At-Taghabun","At-Talaq","At-Tahrim","Al-Mulk",
-"Al-Qalam","Al-Haqqah","Al-Ma'arij","Nuh","Al-Jinn","Al-Muzzammil",
-"Al-Muddaththir","Al-Qiyamah","Al-Insan","Al-Mursalat","An-Naba",
-"An-Nazi'at","Abasa","At-Takwir","Al-Infitar","Al-Mutaffifin",
-"Al-Inshiqaq","Al-Buruj","At-Tariq","Al-A'la","Al-Ghashiyah",
-"Al-Fajr","Al-Balad","Ash-Shams","Al-Layl","Ad-Duha","Ash-Sharh",
-"At-Tin","Al-Alaq","Al-Qadr","Al-Bayyinah","Az-Zalzalah","Al-Adiyat",
-"Al-Qari'ah","At-Takathur","Al-Asr","Al-Humazah","Al-Fil","Quraysh",
-"Al-Ma'un","Al-Kawthar","Al-Kafirun","An-Nasr","Al-Masad",
-"Al-Ikhlas","Al-Falaq","An-Nas"
+const surahNames = [
+"001 - Al-Fatiha","002 - Al-Baqarah","003 - Aal-E-Imran","004 - An-Nisa",
+"005 - Al-Ma'idah","006 - Al-An'am","007 - Al-A'raf","008 - Al-Anfal",
+"009 - At-Tawbah","010 - Yunus","011 - Hud","012 - Yusuf",
+"013 - Ar-Ra'd","014 - Ibrahim","015 - Al-Hijr","016 - An-Nahl",
+"017 - Al-Isra","018 - Al-Kahf","019 - Maryam","020 - Ta-Ha",
+"021 - Al-Anbiya","022 - Al-Hajj","023 - Al-Mu'minun","024 - An-Nur",
+"025 - Al-Furqan","026 - Ash-Shu'ara","027 - An-Naml","028 - Al-Qasas",
+"029 - Al-Ankabut","030 - Ar-Rum","031 - Luqman","032 - As-Sajdah",
+"033 - Al-Ahzab","034 - Saba","035 - Fatir","036 - Ya-Sin",
+"037 - As-Saffat","038 - Sad","039 - Az-Zumar","040 - Ghafir",
+"041 - Fussilat","042 - Ash-Shura","043 - Az-Zukhruf","044 - Ad-Dukhan",
+"045 - Al-Jathiyah","046 - Al-Ahqaf","047 - Muhammad","048 - Al-Fath",
+"049 - Al-Hujurat","050 - Qaf","051 - Adh-Dhariyat","052 - At-Tur",
+"053 - An-Najm","054 - Al-Qamar","055 - Ar-Rahman","056 - Al-Waqi'ah",
+"057 - Al-Hadid","058 - Al-Mujadila","059 - Al-Hashr","060 - Al-Mumtahanah",
+"061 - As-Saff","062 - Al-Jumu'ah","063 - Al-Munafiqun","064 - At-Taghabun",
+"065 - At-Talaq","066 - At-Tahrim","067 - Al-Mulk","068 - Al-Qalam",
+"069 - Al-Haqqah","070 - Al-Ma'arij","071 - Nuh","072 - Al-Jinn",
+"073 - Al-Muzzammil","074 - Al-Muddaththir","075 - Al-Qiyamah","076 - Al-Insan",
+"077 - Al-Mursalat","078 - An-Naba","079 - An-Nazi'at","080 - Abasa",
+"081 - At-Takwir","082 - Al-Infitar","083 - Al-Mutaffifin","084 - Al-Inshiqaq",
+"085 - Al-Buruj","086 - At-Tariq","087 - Al-A'la","088 - Al-Ghashiyah",
+"089 - Al-Fajr","090 - Al-Balad","091 - Ash-Shams","092 - Al-Layl",
+"093 - Ad-Duha","094 - Ash-Sharh","095 - At-Tin","096 - Al-Alaq",
+"097 - Al-Qadr","098 - Al-Bayyinah","099 - Az-Zalzalah","100 - Al-Adiyat",
+"101 - Al-Qari'ah","102 - At-Takathur","103 - Al-Asr","104 - Al-Humazah",
+"105 - Al-Fil","106 - Quraysh","107 - Al-Ma'un","108 - Al-Kawthar",
+"109 - Al-Kafirun","110 - An-Nasr","111 - Al-Masad",
+"112 - Al-Ikhlas","113 - Al-Falaq","114 - An-Nas"
 ];
 
-const surahSelect = document.getElementById("surah");
+const surahSelect=document.getElementById("surah");
 
-surahs.forEach((name, index) => {
-    let option = document.createElement("option");
-    option.value = index + 1;
-    option.textContent = (index + 1) + " - " + name;
-    surahSelect.appendChild(option);
+surahNames.forEach((name,index)=>{
+  let option=document.createElement("option");
+  option.value=(index+1).toString().padStart(3,"0");
+  option.text=name;
+  surahSelect.appendChild(option);
 });
 
-function playSurah() {
+const servers={
+  maher:"https://server8.mp3quran.net/maher/",
+  sudais:"https://server11.mp3quran.net/sds/",
+  shuraym:"https://server7.mp3quran.net/shur/",
+  dossari:"https://server11.mp3quran.net/yasser/"
+};
 
-    const reciter = document.getElementById("reciter").value;
-    const surahNumber = document.getElementById("surah").value;
-    const padded = surahNumber.toString().padStart(3, '0');
+function playAudio(){
+  const reciter=document.getElementById("reciter").value;
+  const surah=surahSelect.value;
+  const audio=document.getElementById("audioPlayer");
 
-    const audioURL =
-    "https://download.quranicaudio.com/quran/" + reciter + "/" + padded + ".mp3";
+  audio.src=servers[reciter]+surah+".mp3";
+  audio.play();
 
-    // Open audio in new tab (WORKS 100%)
-    window.open(audioURL, "_blank");
+  document.getElementById("nowPlaying").innerText=
+    "Now Playing: "+surahSelect.options[surahSelect.selectedIndex].text;
 
-    document.getElementById("nowPlaying").innerText =
-    "Now Playing: " + surahNumber + " - " + surahs[surahNumber - 1];
+  localStorage.setItem("lastSurah",surah);
+  localStorage.setItem("lastReciter",reciter);
 
-    fetch("https://api.alquran.cloud/v1/surah/" + surahNumber + "/quran-uthmani")
-    .then(res => res.json())
-    .then(data => {
-        let text = "";
-        data.data.ayahs.forEach(ayah => {
-            text += `
-                ${ayah.text}
-                <span style="
-                    display:inline-flex;
-                    justify-content:center;
-                    align-items:center;
-                    width:28px;
-                    height:28px;
-                    border:2px solid black;
-                    border-radius:50%;
-                    font-size:14px;
-                    margin:0 6px;
-                ">
-                    ${ayah.numberInSurah}
-                </span>
-            `;
-        });
-        document.getElementById("quranText").innerHTML = text;
-    });
+  loadQuranText(surah);
 }
 
-function downloadSurah() {
+function downloadSurah(){
+  const reciter=document.getElementById("reciter").value;
+  const surah=surahSelect.value;
+  window.open(servers[reciter]+surah+".mp3","_blank");
+}
 
-    const reciter = document.getElementById("reciter").value;
-    const surahNumber = document.getElementById("surah").value;
-    const padded = surahNumber.toString().padStart(3, '0');
+document.getElementById("audioPlayer").addEventListener("ended",function(){
+  let currentIndex=surahSelect.selectedIndex;
+  if(currentIndex<surahSelect.options.length-1){
+    surahSelect.selectedIndex=currentIndex+1;
+    playAudio();
+  }
+});
 
-    const audioURL =
-    "https://download.quranicaudio.com/quran/" + reciter + "/" + padded + ".mp3";
+window.onload=function(){
+  let savedSurah=localStorage.getItem("lastSurah");
+  let savedReciter=localStorage.getItem("lastReciter");
+  if(savedSurah) surahSelect.value=savedSurah;
+  if(savedReciter) document.getElementById("reciter").value=savedReciter;
+};
 
-    window.open(audioURL, "_blank");
+function searchSurah(){
+  let input=document.getElementById("searchSurah").value.toLowerCase();
+  let options=surahSelect.options;
+  for(let i=0;i<options.length;i++){
+    if(options[i].text.toLowerCase().includes(input)){
+      surahSelect.selectedIndex=i;
+      break;
+    }
+  }
+}
+
+function loadQuranText(surahNumber){
+  fetch("https://api.alquran.cloud/v1/surah/"+parseInt(surahNumber))
+  .then(response=>response.json())
+  .then(data=>{
+    let verses=data.data.ayahs;
+    let textHTML="";
+
+    verses.forEach((ayah)=>{
+      let arabicNumber=ayah.numberInSurah
+        .toString()
+        .replace(/\d/g,d=>"٠١٢٣٤٥٦٧٨٩"[d]);
+
+      textHTML+=`
+        ${ayah.text}
+        <span class="ayah-number">${arabicNumber}</span>
+      `;
+    });
+
+    document.getElementById("quranText").innerHTML=textHTML;
+  });
 }
 
 </script>
-
 </body>
 </html>
