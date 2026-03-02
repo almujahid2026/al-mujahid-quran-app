@@ -142,17 +142,17 @@ function playSurah() {
     const surahNumber = document.getElementById("surah").value;
     const surahName = surahs[surahNumber - 1];
 
-    const audioURL = 
-    "https://cdn.islamic.network/quran/audio-surah/128/" 
+    const audioURL =
+    "https://cdn.islamic.network/quran/audio-surah/128/"
     + reciter + "/" + surahNumber + ".mp3";
 
     const audio = document.getElementById("audioPlayer");
 
-    audio.src = audioURL;
-    audio.load();
-    audio.play().catch(error => {
-        alert("Tap Play again. Browser blocked autoplay.");
-    });
+    audio.src = audioURL;   // Just set source
+    audio.load();           // Load it
+
+    // ❌ REMOVE audio.play()
+    // Let user press play manually
 
     document.getElementById("nowPlaying").innerText =
         "Now Playing: " + surahNumber + " - " + surahName;
