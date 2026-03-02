@@ -36,13 +36,6 @@ button {
     border-radius: 20px;
     border: none;
     cursor: pointer;
-}
-
-.playBtn {
-    background: #FFD400;
-}
-
-.downloadBtn {
     background: #FFD400;
 }
 
@@ -76,16 +69,16 @@ audio {
 <div class="container">
 
 <select id="reciter">
-<option value="ar.mahermuaiqly">Sheikh Maher Al-Muaiqly</option>
-<option value="ar.yasseraldossary">Sheikh Yasser Ad-Dossari</option>
-<option value="ar.abdurrahmaansudais">Sheikh Abdulrahman As-Sudais</option>
-<option value="ar.saoodshuraym">Sheikh Saud Al-Shuraim</option>
+<option value="Murattal_Maher_AlMuaiqly_128kbps">Sheikh Maher Al-Muaiqly</option>
+<option value="Yasser_Ad-Dussary_128kbps">Sheikh Yasser Ad-Dossari</option>
+<option value="Abdurrahmaan_As-Sudais_128kbps">Sheikh Abdulrahman As-Sudais</option>
+<option value="Saood_ash-Shuraym_128kbps">Sheikh Saud Al-Shuraim</option>
 </select>
 
 <select id="surah"></select>
 
-<button class="playBtn" onclick="playSurah()">Play</button>
-<button class="downloadBtn" onclick="downloadSurah()">Download Surah</button>
+<button id="playBtn">Play</button>
+<button id="downloadBtn">Download Surah</button>
 
 <audio id="audioPlayer" controls></audio>
 
@@ -120,14 +113,8 @@ const surahs = [
 "Al-Ikhlas","Al-Falaq","An-Nas"
 ];
 
-const reciters = {
-    "maher": "ar.mahermuaiqly",
-    "dossary": "ar.yasseraldossary",
-    "sudais": "ar.abdurrahmaansudais",
-    "shuraim": "ar.saoodshuraym"
-};
-
 const surahSelect = document.getElementById("surah");
+const audioPlayer = document.getElementById("audioPlayer");
 
 surahs.forEach((name, index) => {
     const option = document.createElement("option");
@@ -136,26 +123,20 @@ surahs.forEach((name, index) => {
     surahSelect.appendChild(option);
 });
 
-function playSurah() {
+document.getElementById("playBtn").addEventListener("click", function () {
 
     const reciter = document.getElementById("reciter").value;
     const surahNumber = document.getElementById("surah").value;
-    const surahName = surahs[surahNumber - 1];
+    const padded = surahNumber.toString().padStart(3, '0');
 
     const audioURL =
-    "https://cdn.islamic.network/quran/audio-surah/128/"
-    + reciter + "/" + surahNumber + ".mp3";
+    "https://server8.mp3quran.net/" + reciter + "/" + padded + ".mp3";
 
-    const audio = document.getElementById("audioPlayer");
-
-    audio.src = audioURL;   // Just set source
-    audio.load();           // Load it
-
-    // ❌ REMOVE audio.play()
-    // Let user press play manually
+    audioPlayer.src = audioURL;
+    audioPlayer.play();
 
     document.getElementById("nowPlaying").innerText =
-        "Now Playing: " + surahNumber + " - " + surahName;
+    "Now Playing: " + surahNumber + " - " + surahs[surahNumber - 1];
 
     fetch("https://api.alquran.cloud/v1/surah/" + surahNumber + "/quran-uthmani")
     .then(res => res.json())
@@ -181,18 +162,21 @@ function playSurah() {
         });
         document.getElementById("quranText").innerHTML = text;
     });
-}
 
-function downloadSurah() {
+});
+
+document.getElementById("downloadBtn").addEventListener("click", function () {
+
     const reciter = document.getElementById("reciter").value;
     const surahNumber = document.getElementById("surah").value;
+    const padded = surahNumber.toString().padStart(3, '0');
 
     const audioURL =
-    "https://cdn.islamic.network/quran/audio-surah/128/"
-    + reciter + "/" + surahNumber + ".mp3";
+    "https://server8.mp3quran.net/" + reciter + "/" + padded + ".mp3";
 
     window.open(audioURL);
-}
+
+});
 
 </script>
 
