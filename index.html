@@ -121,10 +121,10 @@ const surahs = [
 ];
 
 const reciters = {
-    "ar.mahermuaiqly": "Maher_Al_Muaiqly_64kbps",
-    "ar.yasseraldossary": "Yasser_Ad-Dussary_64kbps",
-    "ar.abdurrahmaansudais": "Abdurrahmaan_As-Sudais_64kbps",
-    "ar.saoodshuraym": "Saood_ash-Shuraym_64kbps"
+    "maher": "ar.mahermuaiqly",
+    "dossary": "ar.yasseraldossary",
+    "sudais": "ar.abdurrahmaansudais",
+    "shuraim": "ar.saoodshuraym"
 };
 
 const surahSelect = document.getElementById("surah");
@@ -137,24 +137,27 @@ surahs.forEach((name, index) => {
 });
 
 function playSurah() {
-    const reciterKey = document.getElementById("reciter").value;
+
+    const reciter = document.getElementById("reciter").value;
     const surahNumber = document.getElementById("surah").value;
     const surahName = surahs[surahNumber - 1];
 
-    const reciterFolder = reciters[reciterKey];
-
-    const paddedSurah = surahNumber.toString().padStart(3, '0');
-
-    const audioURL = `https://everyayah.com/data/${reciterFolder}/${paddedSurah}.mp3`;
+    const audioURL = 
+    "https://cdn.islamic.network/quran/audio-surah/128/" 
+    + reciter + "/" + surahNumber + ".mp3";
 
     const audio = document.getElementById("audioPlayer");
+
     audio.src = audioURL;
-    audio.play();
+    audio.load();
+    audio.play().catch(error => {
+        alert("Tap Play again. Browser blocked autoplay.");
+    });
 
     document.getElementById("nowPlaying").innerText =
         "Now Playing: " + surahNumber + " - " + surahName;
 
-    fetch(`https://api.alquran.cloud/v1/surah/${surahNumber}/quran-uthmani`)
+    fetch("https://api.alquran.cloud/v1/surah/" + surahNumber + "/quran-uthmani")
     .then(res => res.json())
     .then(data => {
         let text = "";
@@ -181,12 +184,12 @@ function playSurah() {
 }
 
 function downloadSurah() {
-    const reciterKey = document.getElementById("reciter").value;
+    const reciter = document.getElementById("reciter").value;
     const surahNumber = document.getElementById("surah").value;
-    const reciterFolder = reciters[reciterKey];
-    const paddedSurah = surahNumber.toString().padStart(3, '0');
 
-    const audioURL = `https://everyayah.com/data/${reciterFolder}/${paddedSurah}.mp3`;
+    const audioURL =
+    "https://cdn.islamic.network/quran/audio-surah/128/"
+    + reciter + "/" + surahNumber + ".mp3";
 
     window.open(audioURL);
 }
