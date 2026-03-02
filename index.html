@@ -67,12 +67,11 @@ audio {
 <body>
 
 <div class="container">
-
 <select id="reciter">
-<option value="Murattal_Maher_AlMuaiqly_128kbps">Sheikh Maher Al-Muaiqly</option>
-<option value="Yasser_Ad-Dussary_128kbps">Sheikh Yasser Ad-Dossari</option>
-<option value="Abdurrahmaan_As-Sudais_128kbps">Sheikh Abdulrahman As-Sudais</option>
-<option value="Saood_ash-Shuraym_128kbps">Sheikh Saud Al-Shuraim</option>
+<option value="maher_al_muaiqly">Sheikh Maher Al-Muaiqly</option>
+<option value="yasser_ad_dussary">Sheikh Yasser Ad-Dossari</option>
+<option value="abdurrahmaan_as_sudais">Sheikh Abdulrahman As-Sudais</option>
+<option value="saood_ash_shuraym">Sheikh Saud Al-Shuraim</option>
 </select>
 
 <select id="surah"></select>
@@ -130,7 +129,7 @@ document.getElementById("playBtn").addEventListener("click", function () {
     const padded = surahNumber.toString().padStart(3, '0');
 
     const audioURL =
-    "https://server8.mp3quran.net/" + reciter + "/" + padded + ".mp3";
+"https://download.quranicaudio.com/quran/" + reciter + "/" + padded + ".mp3";
 
     audioPlayer.src = audioURL;
     audioPlayer.play();
