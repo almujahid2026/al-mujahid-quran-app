@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<h1>📖 Al-Mujahid Quran</h1>
+<title>Al Mujahid Quran App</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Amiri&display=swap" rel="stylesheet">
 
@@ -59,12 +59,6 @@ audio{
   border-radius:15px;
 }
 
-.ayah{
-  padding:6px;
-  border-radius:10px;
-  transition:0.3s;
-}
-
 .ayah-number{
   display:inline-block;
   border:1px solid #666;
@@ -78,7 +72,7 @@ audio{
 
 <body>
 
-<h1>Multi-Reciter Quran App</h1>
+<h1>Al Mujahid Quran App</h1>
 
 <div class="container">
 
@@ -105,8 +99,6 @@ audio{
 </div>
 
 <script>
-
-let totalAyahs = 0;
 
 const surahNames = [
 "001 - Al-Fatiha","002 - Al-Baqarah","003 - Aal-E-Imran","004 - An-Nisa",
@@ -210,53 +202,22 @@ function loadQuranText(surahNumber){
   .then(response=>response.json())
   .then(data=>{
     let verses=data.data.ayahs;
-    totalAyahs=verses.length;
-
     let textHTML="";
 
-    verses.forEach((ayah,index)=>{
+    verses.forEach((ayah)=>{
       let arabicNumber=ayah.numberInSurah
         .toString()
         .replace(/\d/g,d=>"٠١٢٣٤٥٦٧٨٩"[d]);
 
       textHTML+=`
-        <span class="ayah" id="ayah-${index}">
-          ${ayah.text}
-          <span class="ayah-number">${arabicNumber}</span>
-        </span>
+        ${ayah.text}
+        <span class="ayah-number">${arabicNumber}</span>
       `;
     });
 
     document.getElementById("quranText").innerHTML=textHTML;
   });
 }
-
-const audio=document.getElementById("audioPlayer");
-
-audio.addEventListener("timeupdate",function(){
-
-  if(!audio.duration || totalAyahs===0) return;
-
-  const current=audio.currentTime;
-  const duration=audio.duration;
-
-  const ayahIndex=Math.min(
-  totalAyahs - 1,
-  Math.floor((current / duration) * totalAyahs * 1.05)
-);
-
-  document.querySelectorAll(".ayah").forEach(el=>{
-    el.style.background="transparent";
-  });
-
-  const activeAyah=document.getElementById("ayah-"+ayahIndex);
-
-  if(activeAyah){
-  activeAyah.style.background="#ffeaa7";
-  activeAyah.scrollIntoView({behavior:"smooth",block:"center"});
-}
-
-});
 
 </script>
 </body>
