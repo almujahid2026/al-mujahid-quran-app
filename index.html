@@ -240,7 +240,10 @@ audio.addEventListener("timeupdate",function(){
   const current=audio.currentTime;
   const duration=audio.duration;
 
-  const ayahIndex=Math.floor((current/duration)*totalAyahs);
+  const ayahIndex=Math.min(
+  totalAyahs - 1,
+  Math.floor((current / duration) * totalAyahs * 1.05)
+);
 
   document.querySelectorAll(".ayah").forEach(el=>{
     el.style.background="transparent";
@@ -249,8 +252,9 @@ audio.addEventListener("timeupdate",function(){
   const activeAyah=document.getElementById("ayah-"+ayahIndex);
 
   if(activeAyah){
-    activeAyah.style.background="#ffeaa7";
-  }
+  activeAyah.style.background="#ffeaa7";
+  activeAyah.scrollIntoView({behavior:"smooth",block:"center"});
+}
 
 });
 
