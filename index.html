@@ -120,6 +120,13 @@ const surahs = [
 "Al-Ikhlas","Al-Falaq","An-Nas"
 ];
 
+const reciters = {
+    "ar.mahermuaiqly": "Maher_Al_Muaiqly_64kbps",
+    "ar.yasseraldossary": "Yasser_Ad-Dussary_64kbps",
+    "ar.abdurrahmaansudais": "Abdurrahmaan_As-Sudais_64kbps",
+    "ar.saoodshuraym": "Saood_ash-Shuraym_64kbps"
+};
+
 const surahSelect = document.getElementById("surah");
 
 surahs.forEach((name, index) => {
@@ -130,11 +137,15 @@ surahs.forEach((name, index) => {
 });
 
 function playSurah() {
-    const reciter = document.getElementById("reciter").value;
+    const reciterKey = document.getElementById("reciter").value;
     const surahNumber = document.getElementById("surah").value;
     const surahName = surahs[surahNumber - 1];
 
-    const audioURL = `https://cdn.islamic.network/quran/audio-surah/128/${reciter}/${surahNumber}.mp3`;
+    const reciterFolder = reciters[reciterKey];
+
+    const paddedSurah = surahNumber.toString().padStart(3, '0');
+
+    const audioURL = `https://everyayah.com/data/${reciterFolder}/${paddedSurah}.mp3`;
 
     const audio = document.getElementById("audioPlayer");
     audio.src = audioURL;
@@ -143,23 +154,39 @@ function playSurah() {
     document.getElementById("nowPlaying").innerText =
         "Now Playing: " + surahNumber + " - " + surahName;
 
-    // Uthmani script (like your screenshot)
     fetch(`https://api.alquran.cloud/v1/surah/${surahNumber}/quran-uthmani`)
     .then(res => res.json())
     .then(data => {
         let text = "";
         data.data.ayahs.forEach(ayah => {
-            text += ayah.text + " ۝" + ayah.numberInSurah + " ";
+            text += `
+                ${ayah.text}
+                <span style="
+                    display:inline-flex;
+                    justify-content:center;
+                    align-items:center;
+                    width:28px;
+                    height:28px;
+                    border:2px solid black;
+                    border-radius:50%;
+                    font-size:14px;
+                    margin:0 6px;
+                ">
+                    ${ayah.numberInSurah}
+                </span>
+            `;
         });
         document.getElementById("quranText").innerHTML = text;
     });
 }
 
 function downloadSurah() {
-    const reciter = document.getElementById("reciter").value;
+    const reciterKey = document.getElementById("reciter").value;
     const surahNumber = document.getElementById("surah").value;
+    const reciterFolder = reciters[reciterKey];
+    const paddedSurah = surahNumber.toString().padStart(3, '0');
 
-    const audioURL = `https://cdn.islamic.network/quran/audio-surah/128/${reciter}/${surahNumber}.mp3`;
+    const audioURL = `https://everyayah.com/data/${reciterFolder}/${paddedSurah}.mp3`;
 
     window.open(audioURL);
 }
