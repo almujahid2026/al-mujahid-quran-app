@@ -56,17 +56,13 @@ button {
     text-align: center;
     font-size: 18px;
 }
-
-audio {
-    width: 100%;
-    margin-top: 15px;
-}
 </style>
 </head>
 
 <body>
 
 <div class="container">
+
 <select id="reciter">
 <option value="maher_al_muaiqly">Sheikh Maher Al-Muaiqly</option>
 <option value="yasser_ad_dussary">Sheikh Yasser Ad-Dossari</option>
@@ -76,13 +72,10 @@ audio {
 
 <select id="surah"></select>
 
-<button id="playBtn">Play</button>
-<button id="downloadBtn">Download Surah</button>
-
-<audio id="audioPlayer" controls></audio>
+<button onclick="playSurah()">Play</button>
+<button onclick="downloadSurah()">Download Surah</button>
 
 <div class="nowPlaying" id="nowPlaying"></div>
-
 <div class="card" id="quranText"></div>
 
 </div>
@@ -113,26 +106,25 @@ const surahs = [
 ];
 
 const surahSelect = document.getElementById("surah");
-const audioPlayer = document.getElementById("audioPlayer");
 
 surahs.forEach((name, index) => {
-    const option = document.createElement("option");
+    let option = document.createElement("option");
     option.value = index + 1;
     option.textContent = (index + 1) + " - " + name;
     surahSelect.appendChild(option);
 });
 
-document.getElementById("playBtn").addEventListener("click", function () {
+function playSurah() {
 
     const reciter = document.getElementById("reciter").value;
     const surahNumber = document.getElementById("surah").value;
     const padded = surahNumber.toString().padStart(3, '0');
 
     const audioURL =
-"https://download.quranicaudio.com/quran/" + reciter + "/" + padded + ".mp3";
+    "https://download.quranicaudio.com/quran/" + reciter + "/" + padded + ".mp3";
 
-    audioPlayer.src = audioURL;
-    audioPlayer.play();
+    // Open audio in new tab (WORKS 100%)
+    window.open(audioURL, "_blank");
 
     document.getElementById("nowPlaying").innerText =
     "Now Playing: " + surahNumber + " - " + surahs[surahNumber - 1];
@@ -161,21 +153,19 @@ document.getElementById("playBtn").addEventListener("click", function () {
         });
         document.getElementById("quranText").innerHTML = text;
     });
+}
 
-});
-
-document.getElementById("downloadBtn").addEventListener("click", function () {
+function downloadSurah() {
 
     const reciter = document.getElementById("reciter").value;
     const surahNumber = document.getElementById("surah").value;
     const padded = surahNumber.toString().padStart(3, '0');
 
     const audioURL =
-    "https://server8.mp3quran.net/" + reciter + "/" + padded + ".mp3";
+    "https://download.quranicaudio.com/quran/" + reciter + "/" + padded + ".mp3";
 
-    window.open(audioURL);
-
-});
+    window.open(audioURL, "_blank");
+}
 
 </script>
 
