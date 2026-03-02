@@ -58,6 +58,13 @@ audio{
   padding:20px;
   border-radius:15px;
 }
+
+.ayah{
+  padding:6px;
+  border-radius:10px;
+  transition:0.3s;
+}
+
 .ayah-number{
   display:inline-block;
   border:1px solid #666;
@@ -75,8 +82,7 @@ audio{
 
 <div class="container">
 
-<input type="text" id="searchSurah" placeholder="Search Surah..."
-onkeyup="searchSurah()">
+<input type="text" id="searchSurah" placeholder="Search Surah..." onkeyup="searchSurah()">
 
 <select id="reciter">
   <option value="maher">Sheikh Maher Al-Muaiqly</option>
@@ -100,7 +106,8 @@ onkeyup="searchSurah()">
 
 <script>
 
-// ===== SURAH LIST =====
+let totalAyahs = 0;
+
 const surahNames = [
 "001 - Al-Fatiha","002 - Al-Baqarah","003 - Aal-E-Imran","004 - An-Nisa",
 "005 - Al-Ma'idah","006 - Al-An'am","007 - Al-A'raf","008 - Al-Anfal",
@@ -142,7 +149,6 @@ surahNames.forEach((name,index)=>{
   surahSelect.appendChild(option);
 });
 
-// ===== SERVERS =====
 const servers={
   maher:"https://server8.mp3quran.net/maher/",
   sudais:"https://server11.mp3quran.net/sds/",
@@ -150,7 +156,6 @@ const servers={
   dossari:"https://server11.mp3quran.net/yasser/"
 };
 
-// ===== PLAY =====
 function playAudio(){
   const reciter=document.getElementById("reciter").value;
   const surah=surahSelect.value;
@@ -168,18 +173,12 @@ function playAudio(){
   loadQuranText(surah);
 }
 
-// ===== DOWNLOAD =====
 function downloadSurah(){
   const reciter=document.getElementById("reciter").value;
   const surah=surahSelect.value;
-
-  const link=document.createElement("a");
-  link.href=servers[reciter]+surah+".mp3";
-  link.download="Surah_"+surah+".mp3";
-  link.click();
+  window.open(servers[reciter]+surah+".mp3","_blank");
 }
 
-// ===== AUTO NEXT =====
 document.getElementById("audioPlayer").addEventListener("ended",function(){
   let currentIndex=surahSelect.selectedIndex;
   if(currentIndex<surahSelect.options.length-1){
@@ -188,20 +187,16 @@ document.getElementById("audioPlayer").addEventListener("ended",function(){
   }
 });
 
-// ===== LOAD SAVED =====
 window.onload=function(){
   let savedSurah=localStorage.getItem("lastSurah");
   let savedReciter=localStorage.getItem("lastReciter");
-
-  if(savedSurah){ surahSelect.value=savedSurah; }
-  if(savedReciter){ document.getElementById("reciter").value=savedReciter; }
+  if(savedSurah) surahSelect.value=savedSurah;
+  if(savedReciter) document.getElementById("reciter").value=savedReciter;
 };
 
-// ===== SEARCH =====
 function searchSurah(){
   let input=document.getElementById("searchSurah").value.toLowerCase();
   let options=surahSelect.options;
-
   for(let i=0;i<options.length;i++){
     if(options[i].text.toLowerCase().includes(input)){
       surahSelect.selectedIndex=i;
@@ -210,28 +205,54 @@ function searchSurah(){
   }
 }
 
-// ===== LOAD QURAN TEXT =====
 function loadQuranText(surahNumber){
   fetch("https://api.alquran.cloud/v1/surah/"+parseInt(surahNumber))
   .then(response=>response.json())
   .then(data=>{
     let verses=data.data.ayahs;
+    totalAyahs=verses.length;
+
     let textHTML="";
 
-    verses.forEach(ayah=>{
+    verses.forEach((ayah,index)=>{
       let arabicNumber=ayah.numberInSurah
         .toString()
         .replace(/\d/g,d=>"٠١٢٣٤٥٦٧٨٩"[d]);
 
       textHTML+=`
-        ${ayah.text}
-        <span class="ayah-number">${arabicNumber}</span>
+        <span class="ayah" id="ayah-${index}">
+          ${ayah.text}
+          <span class="ayah-number">${arabicNumber}</span>
+        </span>
       `;
     });
 
     document.getElementById("quranText").innerHTML=textHTML;
   });
 }
+
+const audio=document.getElementById("audioPlayer");
+
+audio.addEventListener("timeupdate",function(){
+
+  if(!audio.duration || totalAyahs===0) return;
+
+  const current=audio.currentTime;
+  const duration=audio.duration;
+
+  const ayahIndex=Math.floor((current/duration)*totalAyahs);
+
+  document.querySelectorAll(".ayah").forEach(el=>{
+    el.style.background="transparent";
+  });
+
+  const activeAyah=document.getElementById("ayah-"+ayahIndex);
+
+  if(activeAyah){
+    activeAyah.style.background="#ffeaa7";
+  }
+
+});
 
 </script>
 </body>
